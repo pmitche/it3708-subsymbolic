@@ -13,11 +13,6 @@ class Triangle(object):
         self.radius = radius
         self.rotation = rotation
 
-    def rotate(self, dr):
-        self.rotation += dr
-        self.rotation %= 2 * math.pi
-        return self.rotation
-
     @property
     def polygon(self):
         return rotate_polygon(
@@ -51,13 +46,13 @@ def run(simulation):
     clock = pygame.time.Clock()
 
     while True:
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit(0)
 
         screen.fill(COLORS["white"])
         simulation.update()
+
         for predator in simulation.predators:
             predator._update()
 

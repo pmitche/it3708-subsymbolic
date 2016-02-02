@@ -72,7 +72,8 @@ class Boid(object):
             flee_y * WEIGHTS["fleeing"]
         ])
 
-        self.limit_velocity()
+        if abs(self.vel_x) > self.max_speed or abs(self.vel_y) > self.max_speed:
+            self.limit_velocity()
         self.move()
 
 
