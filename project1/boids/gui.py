@@ -1,104 +1,100 @@
-from tkinter import *
-
-HEIGHT = 600
-WIDTH = 1000
-
-
-def add_obstacle():
-    pass
+import pygame
+import math
+import sys
+from project1.boids.tmphelp import heading, rotate_polygon
+from project1.boids.simulation import Simulation
+from project1.boids.constants import *
 
 
-def remove_obstacles():
-    pass
+class Triangle(object):
+    def __init__(self, color, x, y, radius, rotation):
+        self.color = color
+        self.position = self.x, self.y = x, y
+        self.radius = radius
+        self.rotation = rotation
+
+    def rotate(self, dr):
+        self.rotation += dr
+        self.rotation %= 2 * math.pi
+        return self.rotation
+
+    @property
+    def polygon(self):
+        return rotate_polygon(
+            polygon=[
+                (
+                    self.x - self.radius,
+                    self.y - self.radius
+                ),
+                (
+                    self.x,
+                    self.y + self.radius
+                ),
+                (
+                    self.x,
+                    self.y + self.radius
+                ),
+                (
+                    self.x + self.radius,
+                    self.y
+                )
+
+            ],
+            r=self.rotation + (3.0 / 4.0) * math.pi,
+            around=self.position
+        )
 
 
-def add_predator():
-    pass
+def run(simulation):
+    pygame.init()
+    screen = pygame.display.set_mode(SIZE)
+    clock = pygame.time.Clock()
 
+    while True:
 
-def remove_predators():
-    pass
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit(0)
 
+        screen.fill(COLORS["white"])
+        simulation.update()
+        for predator in simulation.predators:
+            predator._update()
 
-def update_separation(value):
-    print("Updating separation: {}".format(value))
+        for obstacle in simulation.obstacles:
+            pygame.draw.circle(screen, COLORS["gray"], obstacle.position, obstacle.radius)
 
+        for boid in simulation.boids:
+            triangle = Triangle(
+                color=COLORS["black"],
+                x=boid.x,
+                y=boid.y,
+                radius=BOID_RADIUS,
+                rotation=heading(boid.vel_x, boid.vel_y),
+            )
+            pygame.draw.polygon(screen, triangle.color, triangle.polygon)
 
-def update_alignment(value):
-    print("Updating alignment: {}".format(value))
+        for predator in simulation.predators:
+            triangle = Triangle(
+                color=COLORS["red"],
+                x=predator.x,
+                y=predator.y,
+                radius=PREDATOR_RADIUS,
+                rotation=heading(predator.vel_x, predator.vel_y),
+            )
+            pygame.draw.polygon(screen, triangle.color, triangle.polygon)
 
+        pygame.display.update()
 
-def update_cohesion(value):
-    print("Updating cohesion: {}".format(value))
+        clock.tick(24)
+
 
 def main():
-    root = Tk()
-    root.title = "IT3708 Project 1: Boids"
+    simulation = Simulation()
+    simulation.add_obstacle()
+    simulation.add_boids()
+    simulation.add_predator()
+    run(simulation)
 
-    canvas = Canvas(root, bg="black", height=HEIGHT, width=WIDTH)
-    canvas.create_polygon([20, 10, 15, 25, 25, 25], fill="white")
-    canvas.pack()
-
-
-    bottomframe = Frame(root)
-    bottomframe.pack(side=BOTTOM)
-
-    ######################################################################################
-    # OBSTACLES
-    ######################################################################################
-
-    obstacles_frame = Frame(bottomframe, bd=2, relief=RIDGE, padx=5, pady=10)
-    obstacles_frame.pack(side=LEFT, padx=20)
-
-    obstacles_label = Label(obstacles_frame, text="Obstacles", font=("Helvetica", 18), pady=10)
-    obstacles_label.pack(side=TOP)
-
-    add_obstacle_button = Button(obstacles_frame, text="Add random obstacle", pady=10, width=20, command=add_obstacle())
-    add_obstacle_button.pack()
-
-    remove_obstacles_button = Button(obstacles_frame, text="Remove all obstacles", pady=10, width=20, command=remove_obstacles())
-    remove_obstacles_button.pack()
-
-    ######################################################################################
-    # PREDATORS
-    ######################################################################################
-
-    predators_frame = Frame(bottomframe, bd=2, relief=RIDGE, padx=5, pady=10)
-    predators_frame.pack(side=LEFT, padx=20)
-
-    predators_label = Label(predators_frame, text="Predators", font=("Helvetica", 18), pady=10)
-    predators_label.pack(side=TOP)
-
-    add_predator_button = Button(predators_frame, text="Add random predator", pady=10, width=20, command=add_predator())
-    add_predator_button.pack()
-
-    remove_predators_button = Button(predators_frame, text="Remove all predators", pady=10, width=20, command=remove_predators())
-    remove_predators_button.pack()
-
-    ######################################################################################
-    # WEIGHTS
-    ######################################################################################
-
-    weights_frame = Frame(bottomframe, bd=2, relief=RIDGE, padx=5, pady=10)
-    weights_frame.pack(side=LEFT)
-
-    w_label = Label(weights_frame, text="Weights", font=("Helvetica", 18))
-    w_label.pack(side=TOP, pady=10)
-
-    separation_scale = Scale(weights_frame, length=140, label="Separation", orient=HORIZONTAL, command=update_separation)
-    separation_scale.set(30)
-    separation_scale.pack(side=LEFT, padx=10, pady=10)
-
-    alignment_scale = Scale(weights_frame, length=140, label="Alignment", orient=HORIZONTAL, command=update_alignment)
-    alignment_scale.set(50)
-    alignment_scale.pack(side=LEFT, padx=10, pady=10)
-
-    cohesion_scale = Scale(weights_frame, length=140, label="Cohesion", orient=HORIZONTAL, command=update_cohesion)
-    cohesion_scale.set(65)
-    cohesion_scale.pack(side=LEFT, padx=10, pady=10)
-
-    root.mainloop()
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-
