@@ -1,6 +1,7 @@
 from ea.genotype import *
 from ea.phenotype import *
 from ea.selection import *
+import numpy as np
 
 __author__ = "paulpm"
 
@@ -66,8 +67,26 @@ class Population(object):
     def best_fitness(self):
         return max(self.all_fitnesses)
 
+    @property
+    def best_phenotype(self):
+        return max(self.individuals, key=lambda k: k.fitness)
+
+    @property
+    def standard_deviation(self):
+        return np.std(self.all_fitnesses)
+
     def target_reached(self):
         for x in self.individuals:
             if x.fitness >= 1.0:
                 return True
         return False
+
+    def __repr__(self):
+        return "Generation: {} | Best phenotype: {} | Best fitness: {} | Average fitness: {} | Standard deviation: {}"\
+            .format(
+                self.generation,
+                self.best_phenotype.genotype.bits,
+                self.best_fitness,
+                self.average_fitness,
+                self.standard_deviation
+            )

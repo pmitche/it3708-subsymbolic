@@ -15,10 +15,10 @@ CROSSOVER_RATE = 0.1
 GENOTYPE_LENGTH = 20
 MUTATION_RATE = 0.05
 
-
 T = 0.01
 EPSILON = 0.6
 TOURNAMENT_SIZE = 8
 
+PLOT = True
 ea = EA(mate, adult, pheno)
 ea.run()
