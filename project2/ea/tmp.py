@@ -1,4 +1,6 @@
 from random import randint
+from ea.genotype import *
+from ea.phenotype import *
 
 
 def individual(length):

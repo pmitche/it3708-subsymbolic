@@ -3,8 +3,8 @@ __author__ = "paulpm"
 
 class Phenotype(object):
     def __init__(self, genotype):
-        self.parent = genotype
-        self.genotype = self.develop(genotype)
+        self.genotype = genotype
+        self.bits = self.develop(self.genotype)
 
     @property
     def fitness(self):
@@ -20,7 +20,7 @@ class OneMaxPhenotype(Phenotype):
 
     @property
     def fitness(self):
-        return sum(self.genotype) / len(self.genotype)
+        return sum(self.bits) / len(self.bits)
 
     def develop(self, genotype):
         return genotype.bits
@@ -39,7 +39,5 @@ class LolzPrefixPhenotype(Phenotype):
         return genotype.bits
 
 
-class SurprisingSequencePhenotype(Phenotype):
-    raise NotImplementedError
-
-
+"""class SurprisingSequencePhenotype(Phenotype):
+    raise NotImplementedError"""
