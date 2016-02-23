@@ -1,6 +1,7 @@
 from heapq import nlargest
-from random import random, uniform, sample, choice
+from random import random, uniform, sample, choice, randint
 from numpy import std, mean
+from ea.config import *
 import math
 
 __author__ = "paulpm"
@@ -19,6 +20,14 @@ class AdultSelection(object):
         :return: a new generation with parents from previous generation are possibly filtered
         """
         raise NotImplementedError
+
+    def factory(type):
+        if type == "FullGenerational": return FullGenerationalReplacement()
+        if type == "OverProduction": return OverProduction()
+        if type == "GenerationalMixing": return GenerationalMixing()
+        assert 0, "Bad AdultSelection creation: " + type
+
+    factory = staticmethod(factory)
 
 
 class FullGenerationalReplacement(AdultSelection):
@@ -45,13 +54,9 @@ class GenerationalMixing(AdultSelection):
         """
         return nlargest(amount, population.individuals + population.children, key=lambda k: k.fitness)
 
-ADULT_SELECTIONS = [FullGenerationalReplacement(), OverProduction(), GenerationalMixing()]
 
+"""class MateSelection(object):
 
-
-
-
-class MateSelection(object):
     def select(self, population):
         expval = self.expval(population)
         best = sum(expval)
@@ -67,8 +72,54 @@ class MateSelection(object):
 
 
 class FitnessProportionate(MateSelection):
+    def expval(self, population):
+        average = population.average_fitness
+        return [x.fitness/average for x in population.individuals]
 
-    """def select(self, population):
+
+class SigmaScaling(MateSelection):
+    def expval(self, population):
+        m = mean(population.all_fitnesses)
+        s = std(population.all_fitnesses)
+
+        if s == 0:
+            return list(map(lambda x: 1, population.all_fitnesses))
+        else:
+            return list(map(lambda x: 1 + (x - m)/(2*s), population.all_fitnesses))
+
+
+class Boltzmann(MateSelection):
+    def __init__(self, t):
+        self.t = t
+
+    def expval(self, population):
+        x = [math.exp(x / self.t) for x in population.all_fitnesses]
+        return [nom/mean(x) for nom in x]
+
+
+class Tournament(MateSelection):
+    def __init__(self, size, epsilon):
+        self.size = size
+        self.epsilon = epsilon
+
+    def select(self, population):
+        pick = sample(population.individuals, self.size)
+
+        if uniform(0, 1) > self.epsilon:
+            return max(pick, key=lambda k: k.fitness)
+        else:
+            return choice(pick)
+
+    def expval(self, population):
+        pass"""
+
+
+class MateSelection(object):
+    """
+    Adapted from
+    http://stackoverflow.com/questions/10324015/fitness-proportionate-selection-roulette-wheel-selection-in-python
+    """
+    def select(self, population):
         expval = self.expval(population)
         best = sum(expval)
         pick = uniform(0, best)
@@ -76,8 +127,22 @@ class FitnessProportionate(MateSelection):
         for i in range(0, len(expval)):
             current += expval[i]
             if current > pick:
-                return population.individuals[i]"""
+                return population.individuals[i]
 
+    def expval(self, population):
+        raise NotImplementedError
+
+    def factory(type):
+        if type == "FitnessProportionate": return FitnessProportionate()
+        if type == "SigmaScaling": return SigmaScaling()
+        if type == "Boltzmann": return Boltzmann(T)
+        if type == "Tournament": return Tournament(EPSILON, TOURNAMENT_SIZE)
+        assert 0, "Bad MateSelection creation: " + type
+
+    factory = staticmethod(factory)
+
+
+class FitnessProportionate(MateSelection):
     def expval(self, population):
         average = population.average_fitness
         return [x.fitness/average for x in population.individuals]
@@ -118,5 +183,18 @@ class Tournament(MateSelection):
 
     def expval(self, population):
         pass
+
+
+"""def crossover(x, y):
+    def split(index):
+        return randint(1, len(index)-1)
+
+    if random() < CROSSOVER_RATE:
+        split_point = split(x)
+        return x[:split_point] + y[split_point:], y[:split_point] + x[split_point:]
+    else:
+        return x, y"""
+
+
 
 

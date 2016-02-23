@@ -1,22 +1,24 @@
-from random import randint
-from ea.genotype import *
-from ea.phenotype import *
+from ea.evo import *
+
+MateSelector = ["FitnessProportionate", "SigmaScaling", "Boltzmann", "Tournament"]
+AdultSelector = ["FullGenerational", "OverProduction", "GenerationalMixing"]
+Pheno = ["OneMax", "LOLZPrefix"]
+
+mate = MateSelector[0]
+adult = AdultSelector[0]
+pheno = Pheno[0]
+
+GENERATION_LIMIT = 200
+POPULATION_SIZE = 20
+CROSSOVER_RATE = 0.1
+
+GENOTYPE_LENGTH = 20
+MUTATION_RATE = 0.05
 
 
-def individual(length):
-    return [randint(0, 1) for _ in range(length)]
+T = 0.01
+EPSILON = 0.6
+TOURNAMENT_SIZE = 8
 
-
-def population(size, length):
-    return [individual(length) for _ in range(size)]
-
-
-def fitness(individual):
-    return sum(individual) / len(individual)
-
-
-def average(population):
-    return sum([fitness(x) for x in population]) / len(population)
-
-pop = population(30, 10)
-avg = average(pop)
+ea = EA(mate, adult, pheno)
+ea.run()
