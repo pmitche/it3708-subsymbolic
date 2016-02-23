@@ -48,8 +48,6 @@ class Population(object):
         geno1, geno2 = p1.genotype.crossover(p2.genotype)
 
         return Phenotype.factory(self.phenotype, geno1), Phenotype.factory(self.phenotype, geno2)
-        #geno1, geno2 = crossover(p1.genotype.bits, p2.genotype.bits)
-        #return OneMaxPhenotype(Genotype(length=GENOTYPE_LENGTH, bits=geno1)), OneMaxPhenotype(Genotype(length=GENOTYPE_LENGTH, bits=geno2))
 
     def select_adults(self, amount):
         self.individuals = self.adult_selection.select(self, amount)

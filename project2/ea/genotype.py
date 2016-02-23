@@ -1,6 +1,6 @@
-from ea.config import *
 from ea import utils
 from random import random, randint
+from ea.config import *
 
 __author__ = "paulpm"
 

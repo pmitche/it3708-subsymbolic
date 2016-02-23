@@ -20,6 +20,18 @@ class EA(object):
             self.population.breed()
             print(self.population)
 
+    def evolve(self):
+        while self.population.generation < GENERATION_LIMIT and not self.population.target_reached():
+            self.population.generation += 1
+            self.population.breed()
+            print(self.population)
+
+        if self.population.target_reached():
+            print("Target reached in generation: {}".format(self.population.generation))
+        else:
+            print("Target not reached within {} generations".format(self.population.generation))
+        
+
 
     # reporting functions
     def report(self, best, avg, sd):
