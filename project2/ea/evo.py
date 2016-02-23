@@ -1,24 +1,16 @@
 from ea.population import *
+import matplotlib.pyplot as pyplot
 __author__ = "paulpm"
 
 
 class EA(object):
     def __init__(self, mate_selection, adult_selection, phenotype):
         self.population = Population(mate_selection, adult_selection, phenotype)
-
-    def run(self):
-        self.compute()
-        fittest = list(filter(lambda x: x.fitness == 1, self.population.individuals))
-        if len(fittest) > 0:
-            print("Found in generation", self.population.generation)
-        else:
-            print("Did not find within", self.population.generation, "generations")
-
-    def compute(self):
-        while self.population.generation < GENERATION_LIMIT and not self.population.target_reached():
-            self.population.generation += 1
-            self.population.breed()
-            print(self.population)
+        self.data = {
+            "best":      [],
+            "average":   [],
+            "deviation": []
+        }
 
     def evolve(self):
         while self.population.generation < GENERATION_LIMIT and not self.population.target_reached():
@@ -26,14 +18,24 @@ class EA(object):
             self.population.breed()
             print(self.population)
 
+            if PLOT:
+                self.data["best"].append(self.population.best_fitness)
+                self.data["average"].append(self.population.average_fitness)
+                self.data["deviation"].append(self.population.standard_deviation)
+
         if self.population.target_reached():
             print("Target reached in generation: {}".format(self.population.generation))
         else:
             print("Target not reached within {} generations".format(self.population.generation))
-        
 
+        self.plot()
 
-    # reporting functions
-    def report(self, best, avg, sd):
-        print("generation:", self.generation, "best-f:", best.fitness(), "avg-f:", avg, "sd-f:", sd,
-              "best-ph:", best.phenotype_string())
+    def plot(self):
+        if PLOT:
+            pyplot.plot(self.data["best"], label="Best")
+            pyplot.plot(self.data["average"], label="Average")
+            pyplot.plot(self.data["deviation"], label="Standard deviation")
+            pyplot.legend(bbox_to_anchor=(0., 1.01, 1., .102), loc=3, ncol=2, mode="expand", borderaxespad=0.)
+            pyplot.xlabel("Generations")
+            pyplot.ylabel("Fitness")
+            pyplot.show()

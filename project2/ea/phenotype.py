@@ -1,4 +1,7 @@
+from ea.config import *
+
 __author__ = "paulpm"
+
 
 
 class Phenotype(object):
@@ -14,7 +17,7 @@ class Phenotype(object):
 
     def factory(type, genotype):
         if type == "OneMax": return OneMaxPhenotype(genotype)
-        if type == "LOLZPrefix": return LolzPrefixPhenotype(genotype)
+        if type == "LOLZPrefix": return LolzPrefixPhenotype(genotype, Z)
         assert 0, "Bad Phenotype creation: " + type
 
     factory = staticmethod(factory)
@@ -37,9 +40,21 @@ class LolzPrefixPhenotype(Phenotype):
         Phenotype.__init__(self, genotype)
         self.z = z
 
+    #TODO: MODIFY THIS SHIT
     @property
     def fitness(self):
-        raise NotImplementedError
+        count = 0
+        target_value = None
+        for bit in self.genotype.bits:
+            if count == 0:
+                target_value = bit
+
+            if bit == target_value and (bit == 1 or (bit == 0 and count < self.z)):
+                count += 1
+            else:
+                break
+
+        return count/len(self.genotype.bits)
 
     def develop(self, genotype):
         return genotype

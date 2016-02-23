@@ -15,9 +15,9 @@ class Population(object):
         self.children = []
         self.generation = 0
 
-        self.init_population()
+        self.reset()
 
-    def init_population(self):
+    def reset(self):
         children = []
         for _ in range(POPULATION_SIZE):
             children.append(Phenotype.factory(self.phenotype, Genotype(length=GENOTYPE_LENGTH)))
