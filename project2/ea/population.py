@@ -11,7 +11,7 @@ class Population(object):
         self.mate_selection = MateSelection.factory(mate_selection)
         self.adult_selection = AdultSelection.factory(adult_selection)
         self.phenotype = phenotype
-        self.individuals = []
+        self.adults = []
         self.children = []
         self.generation = 0
 
@@ -22,7 +22,7 @@ class Population(object):
         for _ in range(POPULATION_SIZE):
             children.append(Phenotype.factory(self.phenotype, Genotype(length=GENOTYPE_LENGTH)))
         self.children = children
-        self.individuals = []
+        self.adults = []
         self.generation = 0
 
     def breed(self):
@@ -38,8 +38,8 @@ class Population(object):
 
         self.select_adults(POPULATION_SIZE)
 
-        for individual in self.individuals:
-            individual.genotype.mutate()
+        for adult in self.adults:
+            adult.genotype.mutate()
 
     def crossover(self):
         p1 = self.mate_selection.select(self)
@@ -50,12 +50,12 @@ class Population(object):
         return Phenotype.factory(self.phenotype, geno1), Phenotype.factory(self.phenotype, geno2)
 
     def select_adults(self, amount):
-        self.individuals = self.adult_selection.select(self, amount)
+        self.adults = self.adult_selection.select(self, amount)
         self.children = []
 
     @property
     def all_fitnesses(self):
-        return [x.fitness for x in self.individuals]
+        return [x.fitness for x in self.adults]
 
     @property
     def average_fitness(self):
@@ -67,14 +67,14 @@ class Population(object):
 
     @property
     def best_phenotype(self):
-        return max(self.individuals, key=lambda k: k.fitness)
+        return max(self.adults, key=lambda k: k.fitness)
 
     @property
     def standard_deviation(self):
         return np.std(self.all_fitnesses)
 
     def target_reached(self):
-        for x in self.individuals:
+        for x in self.adults:
             if x.fitness >= 1.0:
                 return True
         return False

@@ -8,16 +8,16 @@ MateSelector = ["FitnessProportionate", "SigmaScaling", "Boltzmann", "Tournament
 AdultSelector = ["FullGenerational", "OverProduction", "GenerationalMixing"]
 Pheno = ["OneMax", "LOLZPrefix"]
 
-mate = MateSelector[2]
-adult = AdultSelector[2]
-pheno = Pheno[0]
+MATE = MateSelector[1]
+ADULT = AdultSelector[2]
+PHENO = Pheno[0]
 
 GENERATION_LIMIT = 10000
-POPULATION_SIZE = 100
-CROSSOVER_RATE = 0.8
+POPULATION_SIZE = 300
+CROSSOVER_RATE = 0.9
 
-GENOTYPE_LENGTH = 60
-MUTATION_RATE = 0.01
+GENOTYPE_LENGTH = 40
+MUTATION_RATE = 0.005
 Z = 21
 
 T = 1
@@ -28,7 +28,7 @@ PLOT = True
 
 
 def main():
-    ea = EA(mate, adult, pheno)
+    ea = EA(MATE, ADULT, PHENO)
     ea.evolve()
 
 if __name__ == "__main__":

@@ -52,7 +52,7 @@ class GenerationalMixing(AdultSelection):
         The m adults from the previous generation do not die, so they and the n children
         compete in a free-for-all for the m adult spots in the next generation.
         """
-        return nlargest(amount, population.individuals + population.children, key=lambda k: k.fitness)
+        return nlargest(amount, population.adults + population.children, key=lambda k: k.fitness)
 
 
 class MateSelection(object):
@@ -68,7 +68,7 @@ class MateSelection(object):
         for i in range(0, len(expval)):
             current += expval[i]
             if current > pick:
-                return population.individuals[i]
+                return population.adults[i]
 
     def expval(self, population):
         raise NotImplementedError
@@ -77,7 +77,7 @@ class MateSelection(object):
         if type == "FitnessProportionate": return FitnessProportionate()
         if type == "SigmaScaling": return SigmaScaling()
         if type == "Boltzmann": return Boltzmann(T)
-        if type == "Tournament": return Tournament(EPSILON, TOURNAMENT_SIZE)
+        if type == "Tournament": return Tournament(TOURNAMENT_SIZE, EPSILON)
         assert 0, "Invalid MateSelection creation: " + type
 
     factory = staticmethod(factory)
@@ -86,18 +86,18 @@ class MateSelection(object):
 class FitnessProportionate(MateSelection):
     def expval(self, population):
         average = population.average_fitness
-        return [x.fitness/average for x in population.individuals]
+        return [x.fitness/average for x in population.adults]
 
 
 class SigmaScaling(MateSelection):
     def expval(self, population):
-        m = mean(population.all_fitnesses)
-        s = std(population.all_fitnesses)
+        avg = population.average_fitness
+        sd = population.standard_deviation
 
-        if s == 0:
-            return list(map(lambda x: 1, population.all_fitnesses))
-        else:
-            return list(map(lambda x: 1 + (x - m)/(2*s), population.all_fitnesses))
+        if std == 0:
+            return [1] * len(population.adults)
+
+        return [1 + (k - avg)/(2*sd) for k in population.all_fitnesses]
 
 
 class Boltzmann(MateSelection):
@@ -115,7 +115,7 @@ class Tournament(MateSelection):
         self.epsilon = epsilon
 
     def select(self, population):
-        pick = sample(population.individuals, self.size)
+        pick = sample(population.adults, self.size)
 
         if uniform(0, 1) > self.epsilon:
             return max(pick, key=lambda k: k.fitness)
