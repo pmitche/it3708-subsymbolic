@@ -10,17 +10,17 @@ Pheno = ["OneMax", "LOLZPrefix"]
 
 mate = MateSelector[2]
 adult = AdultSelector[2]
-pheno = Pheno[1]
+pheno = Pheno[0]
 
 GENERATION_LIMIT = 10000
 POPULATION_SIZE = 100
-CROSSOVER_RATE = 0.2
+CROSSOVER_RATE = 0.8
 
-GENOTYPE_LENGTH = 40
+GENOTYPE_LENGTH = 60
 MUTATION_RATE = 0.01
 Z = 21
 
-T = 0.01
+T = 1
 EPSILON = 0.6
 TOURNAMENT_SIZE = 8
 

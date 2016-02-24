@@ -17,7 +17,7 @@ class Phenotype(object):
     def factory(type, genotype):
         if type == "OneMax": return OneMaxPhenotype(genotype)
         if type == "LOLZPrefix": return LolzPrefixPhenotype(genotype, Z)
-        assert 0, "Bad Phenotype creation: " + type
+        assert 0, "Invalid Phenotype creation: " + type
 
     factory = staticmethod(factory)
 

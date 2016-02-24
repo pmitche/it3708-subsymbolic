@@ -25,7 +25,7 @@ class AdultSelection(object):
         if type == "FullGenerational": return FullGenerationalReplacement()
         if type == "OverProduction": return OverProduction()
         if type == "GenerationalMixing": return GenerationalMixing()
-        assert 0, "Bad AdultSelection creation: " + type
+        assert 0, "Invalid AdultSelection creation: " + type
 
     factory = staticmethod(factory)
 
@@ -78,7 +78,7 @@ class MateSelection(object):
         if type == "SigmaScaling": return SigmaScaling()
         if type == "Boltzmann": return Boltzmann(T)
         if type == "Tournament": return Tournament(EPSILON, TOURNAMENT_SIZE)
-        assert 0, "Bad MateSelection creation: " + type
+        assert 0, "Invalid MateSelection creation: " + type
 
     factory = staticmethod(factory)
 
