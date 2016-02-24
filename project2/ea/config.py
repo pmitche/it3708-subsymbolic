@@ -10,7 +10,7 @@ Pheno = ["OneMax", "LOLZPrefix"]
 
 mate = MateSelector[2]
 adult = AdultSelector[2]
-pheno = Pheno[0]
+pheno = Pheno[1]
 
 GENERATION_LIMIT = 10000
 POPULATION_SIZE = 100

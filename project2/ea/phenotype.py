@@ -3,7 +3,6 @@ from ea.config import *
 __author__ = "paulpm"
 
 
-
 class Phenotype(object):
     def __init__(self, genotype):
         self.genotype = self.develop(genotype)
@@ -40,24 +39,21 @@ class LolzPrefixPhenotype(Phenotype):
         Phenotype.__init__(self, genotype)
         self.z = z
 
-    #TODO: MODIFY THIS SHIT
     @property
     def fitness(self):
+        first = self.genotype.bits[0]
         count = 0
-        target_value = None
         for bit in self.genotype.bits:
-            if count == 0:
-                target_value = bit
-
-            if bit == target_value and (bit == 1 or (bit == 0 and count < self.z)):
+            if bit == first and (bit or (not bit and self.z > count)):
                 count += 1
-            else:
-                break
+            else: break
 
-        return count/len(self.genotype.bits)
+        return count / len(self.genotype.bits)
 
     def develop(self, genotype):
         return genotype
+
+
 
 
 """class SurprisingSequencePhenotype(Phenotype):
