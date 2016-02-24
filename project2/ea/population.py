@@ -1,6 +1,7 @@
 from ea.genotype import *
 from ea.phenotype import *
 from ea.selection import *
+import ea.cfg as cfg
 import numpy as np
 import heapq
 
@@ -20,8 +21,8 @@ class Population(object):
 
     def reset(self):
         children = []
-        for _ in range(POPULATION_SIZE):
-            children.append(Phenotype.factory(self.phenotype, Genotype(length=GENOTYPE_LENGTH)))
+        for _ in range(cfg.POPULATION_SIZE):
+            children.append(Phenotype.factory(self.phenotype, Genotype(length=cfg.GENOTYPE_LENGTH)))
         self.children = children
         self.adults = []
         self.generation = 0
@@ -29,16 +30,16 @@ class Population(object):
     def breed(self):
         if len(self.children) == 0:
             new_gen = []
-            while len(new_gen) < POPULATION_SIZE:
+            while len(new_gen) < cfg.POPULATION_SIZE:
                 first, second = self.crossover()
                 new_gen.append(first)
-                if len(new_gen) < POPULATION_SIZE:
+                if len(new_gen) < cfg.POPULATION_SIZE:
                     new_gen.append(second)
 
             self.children = new_gen
 
         elites = self.elites()
-        self.select_adults(POPULATION_SIZE - len(elites))
+        self.select_adults(cfg.POPULATION_SIZE - len(elites))
 
         for adult in self.adults:
             adult.genotype.mutate()
@@ -58,9 +59,10 @@ class Population(object):
         self.children = []
 
     def elites(self):
-        if not ELITISM:
+        if not cfg.ELITISM:
             return []
-        best = heapq.nlargest(ELITISM_SIZE, self.adults, key=lambda k: k.fitness)
+
+        best = heapq.nlargest(cfg.ELITISM_SIZE, self.adults, key=lambda k: k.fitness)
         return [Phenotype.factory(self.phenotype, x.genotype) for x in best]
 
     @property

@@ -1,7 +1,7 @@
 from heapq import nlargest
 import numpy as np
 from random import sample, choice
-from ea.config import *
+import ea.cfg as cfg
 
 __author__ = "paulpm"
 
@@ -71,8 +71,8 @@ class MateSelection(object):
     def factory(type):
         if type == "FitnessProportionate": return FitnessProportionate()
         if type == "SigmaScaling": return SigmaScaling()
-        if type == "Boltzmann": return Boltzmann(T)
-        if type == "Tournament": return Tournament(TOURNAMENT_SIZE, EPSILON)
+        if type == "Boltzmann": return Boltzmann(cfg.T)
+        if type == "Tournament": return Tournament(cfg.TOURNAMENT_SIZE, cfg.EPSILON)
         assert 0, "Invalid MateSelection creation: " + type
 
     factory = staticmethod(factory)
@@ -115,8 +115,8 @@ class Tournament(MateSelection):
 
         if np.random.random_sample() > self.epsilon:
             return max(chosen, key=lambda k: k.fitness)
-        else:
-            return choice(chosen)
+
+        return choice(chosen)
 
     def expval(self, population):
         pass

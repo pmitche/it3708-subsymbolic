@@ -1,4 +1,4 @@
-from ea.config import *
+import ea.cfg as cfg
 
 __author__ = "paulpm"
 
@@ -16,7 +16,7 @@ class Phenotype(object):
 
     def factory(type, genotype):
         if type == "OneMax": return OneMaxPhenotype(genotype)
-        if type == "LOLZPrefix": return LolzPrefixPhenotype(genotype, Z)
+        if type == "LOLZPrefix": return LolzPrefixPhenotype(genotype, cfg.Z)
         assert 0, "Invalid Phenotype creation: " + type
 
     factory = staticmethod(factory)
