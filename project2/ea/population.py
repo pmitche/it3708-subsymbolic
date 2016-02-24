@@ -2,6 +2,7 @@ from ea.genotype import *
 from ea.phenotype import *
 from ea.selection import *
 import numpy as np
+import heapq
 
 __author__ = "paulpm"
 
@@ -11,9 +12,9 @@ class Population(object):
         self.mate_selection = MateSelection.factory(mate_selection)
         self.adult_selection = AdultSelection.factory(adult_selection)
         self.phenotype = phenotype
+        self.generation = 0
         self.adults = []
         self.children = []
-        self.generation = 0
 
         self.reset()
 
@@ -36,10 +37,13 @@ class Population(object):
 
             self.children = new_gen
 
-        self.select_adults(POPULATION_SIZE)
+        elites = self.elites()
+        self.select_adults(POPULATION_SIZE - len(elites))
 
         for adult in self.adults:
             adult.genotype.mutate()
+            
+        self.adults += elites
 
     def crossover(self):
         p1 = self.mate_selection.select(self)
@@ -52,6 +56,12 @@ class Population(object):
     def select_adults(self, amount):
         self.adults = self.adult_selection.select(self, amount)
         self.children = []
+
+    def elites(self):
+        if not ELITISM:
+            return []
+        best = heapq.nlargest(ELITISM_SIZE, self.adults, key=lambda k: k.fitness)
+        return [Phenotype.factory(self.phenotype, x.genotype) for x in best]
 
     @property
     def all_fitnesses(self):

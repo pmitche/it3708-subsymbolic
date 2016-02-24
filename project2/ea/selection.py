@@ -1,21 +1,16 @@
 from heapq import nlargest
-from random import random, uniform, sample, choice, randint
-from numpy import std, mean
+import numpy as np
+from random import sample, choice
 from ea.config import *
-import math
 
 __author__ = "paulpm"
-
-#TODO: Rename individuals to adults?
-#TODO: __init__ for each object
-#TODO: Refactor MateSelection subclasses
 
 
 class AdultSelection(object):
     def select(self, population, amount):
         """
         The adult selection routine should be defined at runtime as one of the subclasses of this class.
-        :param population: the collective list of individuals in the current generation
+        :param population: a Population object holding lists of adults and children
         :param amount: the number of individuals that should be considered for selection
         :return: a new generation with parents from previous generation are possibly filtered
         """
@@ -63,9 +58,9 @@ class MateSelection(object):
         """
         expval = self.expval(population)
         best = sum(expval)
-        pick = uniform(0, best)
+        pick = np.random.uniform(0, best)
         current = 0
-        for i in range(0, len(expval)):
+        for i in range(len(expval)):
             current += expval[i]
             if current > pick:
                 return population.adults[i]
@@ -94,7 +89,7 @@ class SigmaScaling(MateSelection):
         avg = population.average_fitness
         sd = population.standard_deviation
 
-        if std == 0:
+        if sd == 0:
             return [1] * len(population.adults)
 
         return [1 + (k - avg)/(2*sd) for k in population.all_fitnesses]
@@ -105,8 +100,9 @@ class Boltzmann(MateSelection):
         self.t = t
 
     def expval(self, population):
-        x = [math.exp(x / self.t) for x in population.all_fitnesses]
-        return [nom/mean(x) for nom in x]
+        x = [np.exp(k / self.t) for k in population.all_fitnesses]
+        m = np.mean(x)
+        return [fit/m for fit in x]
 
 
 class Tournament(MateSelection):
@@ -115,12 +111,12 @@ class Tournament(MateSelection):
         self.epsilon = epsilon
 
     def select(self, population):
-        pick = sample(population.adults, self.size)
+        chosen = sample(population.adults, self.size)
 
-        if uniform(0, 1) > self.epsilon:
-            return max(pick, key=lambda k: k.fitness)
+        if np.random.random_sample() > self.epsilon:
+            return max(chosen, key=lambda k: k.fitness)
         else:
-            return choice(pick)
+            return choice(chosen)
 
     def expval(self, population):
         pass

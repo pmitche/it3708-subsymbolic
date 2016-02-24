@@ -8,12 +8,12 @@ MateSelector = ["FitnessProportionate", "SigmaScaling", "Boltzmann", "Tournament
 AdultSelector = ["FullGenerational", "OverProduction", "GenerationalMixing"]
 Pheno = ["OneMax", "LOLZPrefix"]
 
-MATE = MateSelector[1]
+MATE = MateSelector[0]
 ADULT = AdultSelector[2]
-PHENO = Pheno[0]
+PHENO = Pheno[1]
 
 GENERATION_LIMIT = 10000
-POPULATION_SIZE = 300
+POPULATION_SIZE = 200
 CROSSOVER_RATE = 0.9
 
 GENOTYPE_LENGTH = 40
@@ -23,6 +23,9 @@ Z = 21
 T = 1
 EPSILON = 0.6
 TOURNAMENT_SIZE = 8
+
+ELITISM = True
+ELITISM_SIZE = 4
 
 PLOT = True
 
