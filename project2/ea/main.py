@@ -1,4 +1,5 @@
 import ea.cfg as cfg
+import ea.utils as utils
 
 """
 Configurations and constants to be used with the general evolutionary algorithm.
@@ -7,20 +8,22 @@ NOTE: This class is going to be retarded.
 
 MateSelector = ["FitnessProportionate", "SigmaScaling", "Boltzmann", "Tournament"]
 AdultSelector = ["FullGenerational", "OverProduction", "GenerationalMixing"]
-Pheno = ["OneMax", "LOLZPrefix"]
+Pheno = ["OneMax", "OneMaxRandom", "LOLZPrefix"]
 
-#TODO: Add ELITISM and ELITISM_SIZE parameters
 def main():
     def inputs():
-        phen = int(input("Select problem: 0: OneMax, 1: LOLZPrefix: "))
-        if phen == 1:
-            cfg.Z = int(input("Choose zero threshold for LOLZPrefix (21): "))
+        phen = int(input("Select problem: 0: OneMax, 1: OneMaxRandom, 2: LOLZPrefix: "))
 
         cfg.GENOTYPE_LENGTH = int(input("Choose genotype length (40): "))
+        if phen == 1:
+            cfg.TARGET = utils.random_bits(cfg.GENOTYPE_LENGTH)
+            print("Random target: " + str(cfg.TARGET))
+        elif phen == 2:
+            cfg.Z = int(input("Choose zero threshold for LOLZPrefix (21): "))
 
         cfg.PHENO = Pheno[phen]
 
-        mate = int(input("Select a mate selection method. 0: FitnessProp, 1: SigmaScaling, 2: Boltzmann, 3: Tournament: "))
+        mate = int(input("Select a mate selection method: [0: FitnessProp, 1: SigmaScaling, 2: Boltzmann, 3: Tournament]: "))
         if mate == 2:
             cfg.T = float(input("Select Boltzmann temperature (1): "))
         elif mate == 3:
@@ -28,7 +31,7 @@ def main():
             cfg.EPSILON = float(input("Choose epsilon for tournament (0.6): "))
 
         cfg.MATE = MateSelector[mate]
-        cfg.ADULT = AdultSelector[int(input("Select an adult selection method. 0: FullGenerational, 1: OverProd, 2: GenerationalMixing: "))]
+        cfg.ADULT = AdultSelector[int(input("Select an adult selection method: [0: FullGenerational, 1: OverProd, 2: GenerationalMixing]: "))]
 
         cfg.GENERATION_LIMIT = int(input("Choose a generation limit: "))
         cfg.POPULATION_SIZE = int(input("Choose a population size: "))
@@ -44,7 +47,7 @@ def main():
         ea = EA(cfg.MATE, cfg.ADULT, cfg.PHENO)
         ea.evolve()
 
-        cont = input("Continue with new parameters: y. Only modify crossover and mutation: c. Break: exit: ")
+        cont = input("Continue with new parameters: [y/n]: ")
         if cont == "y":
             continue
         else:

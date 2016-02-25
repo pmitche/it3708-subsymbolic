@@ -16,6 +16,7 @@ class Phenotype(object):
 
     def factory(type, genotype):
         if type == "OneMax": return OneMaxPhenotype(genotype)
+        if type == "OneMaxRandom": return OneMaxRandomPhenotype(genotype, cfg.TARGET)
         if type == "LOLZPrefix": return LolzPrefixPhenotype(genotype, cfg.Z)
         assert 0, "Invalid Phenotype creation: " + type
 
@@ -29,6 +30,24 @@ class OneMaxPhenotype(Phenotype):
     @property
     def fitness(self):
         return sum(self.genotype.bits) / len(self.genotype.bits)
+
+    def develop(self, genotype):
+        return genotype
+
+
+class OneMaxRandomPhenotype(Phenotype):
+    def __init__(self, genotype, target):
+        Phenotype.__init__(self, genotype)
+        self.target = target
+
+    @property
+    def fitness(self):
+        count = 0
+        for i in range(len(self.genotype.bits)):
+            if self.genotype.bits[i] == self.target[i]:
+                count += 1
+
+        return count / len(self.target)
 
     def develop(self, genotype):
         return genotype
@@ -52,8 +71,6 @@ class LolzPrefixPhenotype(Phenotype):
 
     def develop(self, genotype):
         return genotype
-
-
 
 
 """class SurprisingSequencePhenotype(Phenotype):
